@@ -9,7 +9,7 @@ import bs4      # beautiful soup - parse HTML info
 
 url = "https://xkcd.com"       # starting url
 
-for _ in range(1):
+while not url.endswith("#"):
     # download the page
     print(f"Downloading page {url}...")
     
@@ -32,12 +32,16 @@ for _ in range(1):
         response = requests.get(comic_url)
         response.raise_for_status()
 
-        # TODO: save the file to a specific folder
+        # save the file to a specific folder
         with open(os.path.join("xkcd_images", os.path.basename(comic_url)), "wb") as image_file:
             # Fill the file in 100000 byte chunks
 
             for chunk in response.iter_content(100_000):
                 image_file.write(chunk)
 
+    # go to the next image -> getting the prev button's url
+    previous_element = soup.select('a[rel="prev"]')
 
-    # TODO: go to the next image -> getting the prev button's url
+    url = "https://xkcd.com" + previous_element[0].get("href")
+
+print("Done.")
